@@ -32,8 +32,14 @@ void LIST_DELETEAT(struct node *head, struct node *elem){
     free(cur);
 }
 
-void LIST_INSERT(struct node *head,struct node* elem){
-    struct node* tail = LISTTAIL(head);
+void LIST_INSERT(struct node **head, struct node* elem){
+    elem->next = NULL;
+
+    if (*head == NULL) {
+        *head = elem;
+        return;
+    }
+
+    struct node* tail = LISTTAIL(*head);
     tail->next = elem;
-    
 }

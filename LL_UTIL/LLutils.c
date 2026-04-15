@@ -12,11 +12,11 @@ struct node * LISTTAIL(struct node* list){
     struct node* cur = list;
     while(cur){
         if(!cur->next){
-            break;
+            return cur;
         }
         else cur = cur->next;
     }
-    return cur;
+    return NULL;
 }
 
 void LIST_DELETEAT(struct node *head, struct node *elem){
@@ -30,4 +30,10 @@ void LIST_DELETEAT(struct node *head, struct node *elem){
     }
     prev->next = cur->next;
     free(cur);
+}
+
+void LIST_INSERT(struct node *head,struct node* elem){
+    struct node* tail = LISTTAIL(head);
+    tail->next = elem;
+    
 }

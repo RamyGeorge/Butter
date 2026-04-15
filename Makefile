@@ -2,17 +2,17 @@ CC = gcc
 CFLAGS = -Wall -g -I./src
 
 SRC = $(wildcard src/LL_utilities/*.c)
-TEST = $(wildcard tests/*.c)
+TESTLL = $(wildcard tests/ll/*.c)
 
-OUT = test_results
+OUTll = test_ll_res
 
-all: $(OUT)
+all: $(OUTll)
 
-$(OUT): $(SRC) $(TEST)
+$(OUTll): $(SRC) $(TESTLL)
 	$(CC) $(CFLAGS) $^ -o $@
 
-test: $(OUT)
-	./$(OUT)
+test_ll: $(OUTll)
+	./$(OUTll)
 
 clean:
-	rm -f $(OUT)
+	rm -f $(OUTll)

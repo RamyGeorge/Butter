@@ -19,17 +19,34 @@ struct node * LISTTAIL(struct node* list){
     return NULL;
 }
 
-void LIST_DELETEAT(struct node *head, struct node *elem){
-    if(head == NULL) return;
+void LIST_DELETEAT(struct node **head, struct node *elem){
+    if( *head == NULL){
+        return;
+    }
     struct node* prev = NULL;
-    struct node* cur = head;
-    while(cur != elem)
-    {
+    struct node* cur = *head;
+    
+    if(*head == elem){
+        struct node* tmp = *head;
+        *head = (*head)->next;
+        free(tmp);
+        return; 
+    }
+    while(cur && cur != elem){
         prev = cur;
         cur = cur->next;
     }
-    prev->next = cur->next;
-    free(cur);
+    if(cur == elem) {
+        prev->next = cur->next;
+        free(cur);
+    }
+    else{
+        return ;
+    }
+
+
+
+    
 }
 
 void LIST_INSERT(struct node **head, struct node* elem){
@@ -42,4 +59,29 @@ void LIST_INSERT(struct node **head, struct node* elem){
 
     struct node* tail = LISTTAIL(*head);
     tail->next = elem;
+}
+
+
+void LIST_DELETEFIRST(struct node **head){
+     if (!head || !*head) return;
+
+    struct node* tmp = *head;
+    *head = (*head)->next;
+    free(tmp);
+    
+}
+
+void LIST_DELETELAST(struct node **head){
+   if (!head || !*head) return;
+    if ((*head)->next == NULL) {
+        free(*head);
+        *head = NULL;
+        return;
+    }
+    struct node* cur = *head;
+    while (cur->next && cur->next->next){
+        cur = cur->next;
+    }
+    free(cur->next);
+    cur->next = NULL;
 }

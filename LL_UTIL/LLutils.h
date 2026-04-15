@@ -3,7 +3,7 @@
 
 struct node{
     struct node* next;
-    void * data;
+    int data;
 };
 
 struct node* LISTHEAD(struct node* list);

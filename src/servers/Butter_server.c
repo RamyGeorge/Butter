@@ -5,6 +5,8 @@
 #include <string.h>
 #include <sys/socket.h>
 
+#define CHUNK_SIZE 4096
+
 const char* methods[9] = {"GET","POST","DELETE","PUT","OPTIONS","PATCH","HEAD","CONNECT","TRACE"};
 
 /* Todo: add support for udp connection */
@@ -38,6 +40,7 @@ int butter_start_serv(const char *port, int family,int protocol,int* fd){
 }
 
 int butter_listen(int *fd, int backlog){
+    if(backlog > SOMAXCONN) backlog = SOMAXCONN;
     if (listen(*fd, backlog) < 0){
         perror("listen failed");
         return -1;          
@@ -89,8 +92,40 @@ int butter_parse_request(const char *req, struct butter_request *butterreq){
     // }
 
 
-    return 1;
+    return 0;
 
 
 
 }
+int butter_on(int fd ,struct butter_request* butterreq, FILE *fp){
+    if (!strcmp(butterreq->method,"GET")){
+        const char *header =
+            "HTTP/1.1 200 OK\r\n"
+            "Content-Type: text/plain\r\n"
+            "Connection: close\r\n"
+            "\r\n";
+
+        send(fd, header, strlen(header), 0);
+        char buff[CHUNK_SIZE];
+
+        int idx = 0;
+        int c;
+        while((c = getc(fp)) != EOF){
+            buff[idx++] = (char)c;
+
+            if (idx == CHUNK_SIZE){
+                send(fd, buff, idx, 0);
+                idx = 0;
+            }
+        }
+
+        if (idx > 0){
+            send(fd, buff, idx, 0);
+        }
+    }
+
+    return 0;
+}
+
+// add proper file handller
+// add header and status handllers

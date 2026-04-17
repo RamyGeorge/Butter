@@ -1,5 +1,7 @@
 #include "Butter_server.h"
+#include <asm-generic/errno-base.h>
 #include <netdb.h>
+#include <stdio.h>
 #include <sys/socket.h>
 
 
@@ -31,6 +33,24 @@ int butter_start_serv(const char *port, int family,int protocol,int* fd){
     freeaddrinfo(bindaddr);
     *fd = server;
     return 0;
-    
+}
 
+int butter_listen(int *fd, int backlog){
+    if (listen(*fd, backlog) < 0){
+        perror("listen failed");
+        return -1;
+    }
+    return 0;
+}
+
+int butter_pop_client(int *fd){
+    struct sockaddr_storage clientaddr;
+    socklen_t len = sizeof(clientaddr);
+
+    int client = accept(*fd, (struct sockaddr*)&clientaddr, &len);
+    if(client < 0){
+        perror("accept failed");
+        return -1;
+    }
+    return client;
 }

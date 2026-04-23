@@ -1,11 +1,12 @@
+#include "../Socket_headers.h"
 #include "Butter_server.h"
+#include "../structures.h"
 #include <asm-generic/errno-base.h>
 #include <netdb.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 
-#define CHUNK_SIZE 4096
 
 const char* methods[9] = {"GET","POST","DELETE","PUT","OPTIONS","PATCH","HEAD","CONNECT","TRACE"};
 
@@ -60,72 +61,72 @@ int butter_pop_client(int *fd){
     return client;
 }
 
-int butter_parse_request(const char *req, struct butter_request *butterreq){
+// int butter_parse_request(const char *req, struct butter_request *butterreq){
 
-    for(int i =0; i <9;i++){
-        char* tmp;
-        if((tmp = strstr(req,methods[i])) != NULL){
-            strcpy(butterreq->method, methods[i]);
-            break;
-        }
-    }
+//     for(int i =0; i <9;i++){
+//         char* tmp;
+//         if((tmp = strstr(req,methods[i])) != NULL){
+//             strcpy(butterreq->method, methods[i]);
+//             break;
+//         }
+//     }
 
-    // primitive approach but it's all i have. start a pointer after method and parse all the way 1 before pointer for ver
-    const char * verptr = strstr(req,"HTTP/1.1");
-    const char * textpr = strstr(req,"/");
+//     // primitive approach but it's all i have. start a pointer after method and parse all the way 1 before pointer for ver
+//     const char * verptr = strstr(req,"HTTP/1.1");
+//     const char * textpr = strstr(req,"/");
     
-    int idx = 0;
-    while(textpr != verptr-1){
-        char c = *textpr;
-        strcpy(&butterreq->path[idx], &c);
-        idx++;
-        textpr++;
-    }
+//     int idx = 0;
+//     while(textpr != verptr-1){
+//         char c = *textpr;
+//         strcpy(&butterreq->path[idx], &c);
+//         idx++;
+//         textpr++;
+//     }
 
-    // int newidx = 0;
-    // char *newline = strstr(req, "\n");
-    // while(verptr != newline){
-    //     strcpy(&butterreq->ver[newidx],&req[idx]);
-    //     verptr++;
-    //     newidx++;
-    //     idx++;
-    // }
-
-
-    return 0;
+//     // int newidx = 0;
+//     // char *newline = strstr(req, "\n");
+//     // while(verptr != newline){
+//     //     strcpy(&butterreq->ver[newidx],&req[idx]);
+//     //     verptr++;
+//     //     newidx++;
+//     //     idx++;
+//     // }
 
 
+//     return 0;
 
-}
-int butter_on(int fd ,struct butter_request* butterreq, FILE *fp){
-    if (!strcmp(butterreq->method,"GET")){
-        const char *header =
-            "HTTP/1.1 200 OK\r\n"
-            "Content-Type: text/plain\r\n"
-            "Connection: close\r\n"
-            "\r\n";
 
-        send(fd, header, strlen(header), 0);
-        char buff[CHUNK_SIZE];
 
-        int idx = 0;
-        int c;
-        while((c = getc(fp)) != EOF){
-            buff[idx++] = (char)c;
+// }
+// int butter_on(int fd ,struct butter_request* butterreq, FILE *fp){
+//     if (!strcmp(butterreq->method,"GET")){
+//         const char *header =
+//             "HTTP/1.1 200 OK\r\n"
+//             "Content-Type: text/plain\r\n"
+//             "Connection: close\r\n"
+//             "\r\n";
 
-            if (idx == CHUNK_SIZE){
-                send(fd, buff, idx, 0);
-                idx = 0;
-            }
-        }
+//         send(fd, header, strlen(header), 0);
+//         char buff[CHUNK_SIZE];
 
-        if (idx > 0){
-            send(fd, buff, idx, 0);
-        }
-    }
+//         int idx = 0;
+//         int c;
+//         while((c = getc(fp)) != EOF){
+//             buff[idx++] = (char)c;
 
-    return 0;
-}
+//             if (idx == CHUNK_SIZE){
+//                 send(fd, buff, idx, 0);
+//                 idx = 0;
+//             }
+//         }
 
-// add proper file handller
-// add header and status handllers
+//         if (idx > 0){
+//             send(fd, buff, idx, 0);
+//         }
+//     }
+
+//     return 0;
+// }
+
+// // add proper file handller
+// // add header and status handllers
